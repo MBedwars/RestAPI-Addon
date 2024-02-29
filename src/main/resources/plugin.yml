@@ -1,0 +1,8 @@
+website: https://mbedwars.com
+version: ${project.version}
+name: MBedwars-REST-API
+author: "Marcel Seibel (aka Marcely1199)"
+main: de.marcely.bedwars.restapi.RestApiPlugin
+description: "Run a REST server to access life game data of MBedwars."
+api-version: 1.13
+depend: [ MBedwars ]
