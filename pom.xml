@@ -95,8 +95,24 @@
           <createDependencyReducedPom>false</createDependencyReducedPom>
           <relocations>
             <relocation>
-              <pattern>com.google.gson</pattern>
-              <shadedPattern>de.marcely.bedwars.libraries.com.google.gson</shadedPattern>
+              <pattern>org.eclipse</pattern>
+              <shadedPattern>de.marcely.bedwars.restapi.libraries.org.eclipse</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>kotlin</pattern>
+              <shadedPattern>de.marcely.bedwars.restapi.libraries.kotlin</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>jakarta</pattern>
+              <shadedPattern>de.marcely.bedwars.restapi.libraries.jakarta</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>io</pattern>
+              <shadedPattern>de.marcely.bedwars.restapi.libraries.io</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>com</pattern>
+              <shadedPattern>de.marcely.bedwars.restapi.libraries.com</shadedPattern>
             </relocation>
           </relocations>
           <artifactSet>
