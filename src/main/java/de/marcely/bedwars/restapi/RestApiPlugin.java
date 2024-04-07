@@ -132,7 +132,7 @@ public class RestApiPlugin extends JavaPlugin {
           path("stat-sets", () -> {
             get(PlayersStatsController::getAllSets, Permission.PLAYERS_STATS_READ_SETS);
           });
-          path("leaderboard", () -> {
+          path("stats-leaderboard", () -> {
             get(PlayersStatsController::getLeaderboard, Permission.PLAYERS_STATS_READ_LEADERBOARD);
           });
           path("achievements/{uuid}", () -> {

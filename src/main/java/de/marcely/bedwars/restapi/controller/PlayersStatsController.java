@@ -125,6 +125,7 @@ public class PlayersStatsController {
   public static void getOneLeaderboard(Context ctx) {
     final UUID uuid = validUUID(ctx);
     final String[] statSetNames = ctx.queryParamAsClass("statSets", String[].class)
+        .check(s -> s != null, "statSets query param must be present")
         .check(s -> s.length == 0, "statSets cannot be empty")
         .get();
     final PlayerStatSet[] statSets = new PlayerStatSet[statSetNames.length];
@@ -178,17 +179,20 @@ public class PlayersStatsController {
           @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)}),
           @OpenApiResponse(status = "404", content = {@OpenApiContent(from = ErrorResponse.class)})
       },
-      path = "/players/stats/leaderboard",
+      path = "/players/stats-leaderboard",
       methods = {HttpMethod.GET}
   )
   public static void getLeaderboard(Context ctx) {
     final String[] statSetNames = ctx.queryParamAsClass("statSets", String.class)
+        .check(s -> s != null, "statSets query param must be present")
         .check(s -> !s.isEmpty(), "statSets cannot be empty")
         .get().split(",");
     final int minPos = ctx.queryParamAsClass("minPos", Integer.class)
+        .check(s -> s != null, "minPos query param must be present")
         .check(i -> i >= 1, "minPos must be greater than 1")
         .get();
     final int maxPos = ctx.queryParamAsClass("maxPos", Integer.class)
+        .check(s -> s != null, "maxPos query param must be present")
         .check(i -> i >= minPos, "maxPos must be greater than or equal to minPos")
         .get();
     final PlayerStatSet[] statSets = new PlayerStatSet[statSetNames.length];
