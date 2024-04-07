@@ -14,6 +14,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <javalin.version>6.1.3</javalin.version>
     <lombok.version>1.18.32</lombok.version>
+    <kotlin.version>1.9.23</kotlin.version> <!-- javalin dependency -->
   </properties>
 
   <dependencies>
@@ -59,7 +60,7 @@
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-reflect</artifactId>
-      <version>1.9.23</version>
+      <version>${kotlin.version}</version>
     </dependency>
   </dependencies>
 
@@ -97,10 +98,6 @@
             <relocation>
               <pattern>org.eclipse</pattern>
               <shadedPattern>de.marcely.bedwars.restapi.libraries.org.eclipse</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>kotlin</pattern>
-              <shadedPattern>de.marcely.bedwars.restapi.libraries.kotlin</shadedPattern>
             </relocation>
             <relocation>
               <pattern>jakarta</pattern>
