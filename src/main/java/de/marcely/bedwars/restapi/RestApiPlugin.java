@@ -26,8 +26,8 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 @Getter
 public class RestApiPlugin extends JavaPlugin {
 
-  private static final byte MBEDWARS_API_NUM = 100;
-  private static final String MBEDWARS_API_NAME = "5.4";
+  private static final byte MBEDWARS_API_NUM = 103;
+  private static final String MBEDWARS_API_NAME = "5.4.4";
 
   private static RestApiPlugin instance;
 
