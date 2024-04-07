@@ -12,8 +12,11 @@ import de.marcely.bedwars.restapi.controller.ServersController;
 import io.javalin.Javalin;
 import io.javalin.openapi.plugin.OpenApiPlugin;
 import io.javalin.openapi.plugin.redoc.ReDocPlugin;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -101,6 +104,23 @@ public class RestApiPlugin extends JavaPlugin {
         });
       }));
       config.registerPlugin(new ReDocPlugin());
+      config.bundledPlugins.enableCors(cors -> {
+        cors.addRule(it -> {
+          final List<String> withoutAny = Configs.allowedCorsOrigins.stream()
+              .filter(v -> !v.equals("*"))
+              .collect(Collectors.toList());
+
+          if (withoutAny.size() != Configs.allowedCorsOrigins.size())
+            it.anyHost();
+
+          if (withoutAny.isEmpty())
+            return;
+
+          it.allowHost(
+              withoutAny.get(0),
+              Arrays.copyOfRange(withoutAny.toArray(new String[0]), 1, withoutAny.size()));
+        });
+      });
 
       config.router.mount(router -> {
         router.beforeMatched(this.authController::handleAccess);

@@ -22,8 +22,9 @@ public class Configs {
 
   public static String host = "localhost";
   public static int port = 8084;
+  public static List<String> allowedCorsOrigins = Collections.emptyList();
 
-  private static final byte VERSION = 1;
+  private static final byte VERSION = 2;
 
   private static File getFile(RestApiPlugin plugin) {
     return new File(plugin.getAddon().getDataFolder(), "configs.yml");
@@ -59,6 +60,7 @@ public class Configs {
     // read it
     Configs.host = config.getString("host", Configs.host);
     Configs.port = config.getInt("port", Configs.port);
+    Configs.allowedCorsOrigins = config.getStringList("allowed-cors-origins");
 
     {
       final List<?> entries = config.getList("users", Collections.emptyList());
@@ -134,6 +136,14 @@ public class Configs {
 
       config.set("users", entries);
     }
+
+    config.addEmptyLine();
+
+    config.addComment("The list of allowed CORS origins. It adds an extra layer of security");
+    config.addComment("It basically refers to the allowed domains that can access the API");
+    config.addComment("You may see an \"Cross-Origin Request Blocked\" error if it's not configured correctly");
+    config.addComment("Use * to allow all origins, although it is recommended to type in manually the permitted domains");
+    config.set("allowed-cors-origins", Configs.allowedCorsOrigins);
 
     // save
     getFile(plugin).getParentFile().mkdirs();
