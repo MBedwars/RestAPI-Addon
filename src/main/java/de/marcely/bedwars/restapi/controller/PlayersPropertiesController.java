@@ -36,7 +36,7 @@ public class PlayersPropertiesController {
       methods = {HttpMethod.GET}
   )
   public static void getOne(Context ctx) {
-    final UUID uuid = validUUID(ctx);
+    final UUID uuid = Util.validUUID(ctx);
     final PlayerProperties properties = Util.getAwait(c -> PlayerDataAPI.get().getProperties(uuid, c));
 
     ctx.json(PlayerPropertiesModel.from(properties));
@@ -65,7 +65,7 @@ public class PlayersPropertiesController {
   )
   public static void update(Context ctx) {
     // parse context
-    final UUID uuid = validUUID(ctx);
+    final UUID uuid = Util.validUUID(ctx);
     final boolean replaceAll = ctx.queryParamAsClass("replaceAll", Boolean.class)
         .getOrDefault(false);
     final PlayerPropertiesModel replacement = ctx.bodyAsClass(PlayerPropertiesModel.class);
@@ -90,19 +90,5 @@ public class PlayersPropertiesController {
 
     properties.save();
     ctx.json(PlayerPropertiesModel.from(properties));
-  }
-
-
-
-  private static UUID validUUID(Context ctx) {
-    final String raw = ctx.pathParamAsClass("uuid", String.class)
-        .check(s -> !s.isEmpty(), "restId cannot be empty")
-        .get();
-
-    try {
-      return UUID.fromString(raw);
-    } catch (IllegalArgumentException e) {
-      throw new BadRequestResponse("uuid has an invalid format");
-    }
   }
 }

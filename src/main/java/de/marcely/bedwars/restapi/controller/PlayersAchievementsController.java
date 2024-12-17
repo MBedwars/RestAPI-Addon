@@ -8,7 +8,6 @@ import de.marcely.bedwars.restapi.model.player.PlayerAchievementModel;
 import de.marcely.bedwars.restapi.model.player.PlayerAchievementsModel;
 import de.marcely.bedwars.restapi.model.player.PlayerAchievementsModel.Earning;
 import de.marcely.bedwars.restapi.util.Util;
-import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.openapi.HttpMethod;
@@ -39,7 +38,7 @@ public class PlayersAchievementsController {
       methods = {HttpMethod.GET}
   )
   public static void getOne(Context ctx) {
-    final UUID uuid = validUUID(ctx);
+    final UUID uuid = Util.validUUID(ctx);
     final PlayerAchievements achievements = Util.getAwait(c -> PlayerDataAPI.get().getAchievements(uuid, c));
 
     ctx.json(PlayerAchievementsModel.from(achievements));
@@ -71,7 +70,7 @@ public class PlayersAchievementsController {
   )
   public static void update(Context ctx) {
     // parse context
-    final UUID uuid = validUUID(ctx);
+    final UUID uuid = Util.validUUID(ctx);
     final boolean replaceAll = ctx.queryParamAsClass("replaceAll", Boolean.class)
         .getOrDefault(false);
     final boolean notify = ctx.queryParamAsClass("notify", Boolean.class)
@@ -131,19 +130,5 @@ public class PlayersAchievementsController {
   )
   public static void getAllTypes(Context ctx) {
     ctx.json(PlayerAchievementModel.from(PlayerDataAPI.get().getRegisteredAchievementTypes()));
-  }
-
-
-
-  private static UUID validUUID(Context ctx) {
-    final String raw = ctx.pathParamAsClass("uuid", String.class)
-        .check(s -> !s.isEmpty(), "restId cannot be empty")
-        .get();
-
-    try {
-      return UUID.fromString(raw);
-    } catch (IllegalArgumentException e) {
-      throw new BadRequestResponse("uuid has an invalid format");
-    }
   }
 }

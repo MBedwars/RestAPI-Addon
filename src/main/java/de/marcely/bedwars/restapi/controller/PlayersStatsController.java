@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 public class PlayersStatsController {
 
@@ -46,7 +48,7 @@ public class PlayersStatsController {
       methods = {HttpMethod.GET}
   )
   public static void getOne(Context ctx) {
-    final UUID uuid = validUUID(ctx);
+    final UUID uuid = Util.validUUID(ctx);
     final PlayerStats properties = Util.getAwait(c -> PlayerDataAPI.get().getStats(uuid, c));
 
     ctx.json(PlayerStatsModel.from(properties));
@@ -75,7 +77,7 @@ public class PlayersStatsController {
   )
   public static void update(Context ctx) {
     // parse context
-    final UUID uuid = validUUID(ctx);
+    final UUID uuid = Util.validUUID(ctx);
     final boolean replaceAll = ctx.queryParamAsClass("replaceAll", Boolean.class)
         .getOrDefault(false);
     final PlayerStatsModel replacement = ctx.bodyAsClass(PlayerStatsModel.class);
@@ -123,7 +125,7 @@ public class PlayersStatsController {
       methods = {HttpMethod.GET}
   )
   public static void getOneLeaderboard(Context ctx) {
-    final UUID uuid = validUUID(ctx);
+    final UUID uuid = Util.validUUID(ctx);
     final String[] statSetNames = ctx.queryParamAsClass("statSets", String[].class)
         .check(s -> s != null, "statSets query param must be present")
         .check(s -> s.length == 0, "statSets cannot be empty")
@@ -226,18 +228,5 @@ public class PlayersStatsController {
     }
 
     ctx.json(players.values());
-  }
-
-
-  private static UUID validUUID(Context ctx) {
-    final String raw = ctx.pathParamAsClass("uuid", String.class)
-        .check(s -> !s.isEmpty(), "restId cannot be empty")
-        .get();
-
-    try {
-      return UUID.fromString(raw);
-    } catch (IllegalArgumentException e) {
-      throw new BadRequestResponse("uuid has an invalid format");
-    }
   }
 }

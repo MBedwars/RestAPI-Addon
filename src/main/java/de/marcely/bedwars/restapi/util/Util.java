@@ -1,10 +1,15 @@
 package de.marcely.bedwars.restapi.util;
 
+import io.javalin.http.BadRequestResponse;
+import io.javalin.http.Context;
 import java.security.SecureRandom;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.MemoryConfiguration;
 
@@ -59,5 +64,23 @@ public class Util {
       return sec;
     } else
       return null;
+  }
+
+  @SuppressWarnings("deprecation") // Bukkit#getOfflinePlayer(String)
+  public static UUID validUUID(Context ctx) {
+    final String raw = ctx.pathParamAsClass("uuid", String.class)
+        .check(s -> !s.isEmpty(), "restId cannot be empty")
+        .get();
+
+    try {
+      return UUID.fromString(raw);
+    } catch (IllegalArgumentException e) {
+      final OfflinePlayer player = Bukkit.getOfflinePlayer(raw);
+
+      if (player != null)
+        return player.getUniqueId();
+
+      throw new BadRequestResponse("uuid has an invalid format");
+    }
   }
 }

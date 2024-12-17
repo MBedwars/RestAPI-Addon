@@ -5,7 +5,7 @@ import de.marcely.bedwars.api.remote.RemotePlayer;
 import de.marcely.bedwars.api.remote.RemoteServer;
 import de.marcely.bedwars.restapi.model.ErrorResponse;
 import de.marcely.bedwars.restapi.model.misc.OnlinePlayerModel;
-import io.javalin.http.BadRequestResponse;
+import de.marcely.bedwars.restapi.util.Util;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.openapi.HttpMethod;
@@ -98,26 +98,12 @@ public class PlayersOnlineController {
       methods = {HttpMethod.GET}
   )
   public static void getOne(Context ctx) {
-    final UUID uuid = validUUID(ctx);
+    final UUID uuid = Util.validUUID(ctx);
     final RemotePlayer player = RemoteAPI.get().getOnlinePlayer(uuid);
 
     if (player == null)
       throw new NotFoundResponse("Player not online");
 
     ctx.json(OnlinePlayerModel.from(player));
-  }
-
-
-
-  private static UUID validUUID(Context ctx) {
-    final String raw = ctx.pathParamAsClass("uuid", String.class)
-        .check(s -> !s.isEmpty(), "restId cannot be empty")
-        .get();
-
-    try {
-      return UUID.fromString(raw);
-    } catch (IllegalArgumentException e) {
-      throw new BadRequestResponse("uuid has an invalid format");
-    }
   }
 }
