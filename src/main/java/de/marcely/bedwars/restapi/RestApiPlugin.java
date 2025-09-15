@@ -174,5 +174,7 @@ public class RestApiPlugin extends JavaPlugin {
         });
       });
     }).start();
+
+    getLogger().info("Started server on http://" + Configs.host + ":" + Configs.port);
   }
 }
