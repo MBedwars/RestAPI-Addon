@@ -1,10 +1,12 @@
 package de.marcely.bedwars.restapi.controller;
 
+import de.marcely.bedwars.api.player.PlayerDataAPI;
 import de.marcely.bedwars.api.remote.RemoteAPI;
 import de.marcely.bedwars.api.remote.RemotePlayer;
 import de.marcely.bedwars.api.remote.RemoteServer;
 import de.marcely.bedwars.restapi.model.ErrorResponse;
 import de.marcely.bedwars.restapi.model.misc.OnlinePlayerModel;
+import de.marcely.bedwars.restapi.util.Util;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
@@ -105,6 +107,38 @@ public class PlayersOnlineController {
       throw new NotFoundResponse("Player not online");
 
     ctx.json(OnlinePlayerModel.from(player));
+  }
+
+
+  @OpenApi(
+      summary = "Get a player's uuid by their name",
+      description = "Only works for players that joined the server at least once. "
+          + " Also works for players that aren't online.",
+      operationId = "getOnePlayerUUIDByName",
+      tags = "Online Players",
+      pathParams = {
+          @OpenApiParam(name = "name", type = String.class, description = "The username of the player")
+      },
+      responses = {
+          @OpenApiResponse(status = "200", content = @OpenApiContent(from = UUID.class)),
+          @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)}),
+          @OpenApiResponse(status = "404", content = {@OpenApiContent(from = ErrorResponse.class)})
+      },
+      path = "/players/get-uuid/{name}",
+      methods = {HttpMethod.GET}
+  )
+  public static void getOneUUIDByName(Context ctx) {
+    final String name = ctx.pathParamAsClass("name", String.class)
+        .check(s -> s.length() >= 3, "name must be longer than 3 characters)")
+        .check(s -> s.length() <= 16, "name must be shorter than 16 characters")
+        .check(s -> s.chars().allMatch(c -> c >= 33 && c <= 126), "name contains invalid characters")
+        .get();
+    final Optional<UUID> uuid = Util.getAwait(c -> PlayerDataAPI.get().getUUIDByName(name, c));
+
+    if (uuid.isEmpty())
+      throw new NotFoundResponse("no player with that name found");
+
+    ctx.json(uuid.get());
   }
 
 

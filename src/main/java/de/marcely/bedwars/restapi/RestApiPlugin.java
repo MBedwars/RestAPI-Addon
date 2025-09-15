@@ -140,6 +140,9 @@ public class RestApiPlugin extends JavaPlugin {
             get(PlayersOnlineController::getAll, Permission.PLAYERS_READ_ONLINE);
             get("{uuid}", PlayersOnlineController::getOne, Permission.PLAYERS_READ_ONLINE);
           });
+          path("get-uuid", () -> {
+            get("{name}", PlayersOnlineController::getOneUUIDByName, Permission.PLAYERS_READ_ONLINE);
+          });
           path("stats/{uuid}", () -> {
             get(PlayersStatsController::getOne, Permission.PLAYERS_STATS_READ);
             get("leaderboard", PlayersStatsController::getOneLeaderboard, Permission.PLAYERS_STATS_READ_RANK);
