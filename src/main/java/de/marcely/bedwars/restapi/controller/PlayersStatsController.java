@@ -14,17 +14,14 @@ import de.marcely.bedwars.restapi.model.player.PlayerStatsModel;
 import de.marcely.bedwars.restapi.util.Util;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
+import io.javalin.http.NotFoundResponse;
 import io.javalin.openapi.HttpMethod;
 import io.javalin.openapi.OpenApi;
 import io.javalin.openapi.OpenApiContent;
 import io.javalin.openapi.OpenApiParam;
-import io.javalin.openapi.OpenApiRequestBody;
 import io.javalin.openapi.OpenApiResponse;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -50,57 +47,6 @@ public class PlayersStatsController {
     final PlayerStats properties = Util.getAwait(c -> PlayerDataAPI.get().getStats(uuid, c));
 
     ctx.json(PlayerStatsModel.from(properties));
-  }
-
-
-  @OpenApi(
-      summary = "Update the stats a player owns",
-      operationId = "updateOnePlayersStats",
-      tags = "Player Stats",
-      pathParams = {
-          @OpenApiParam(name = "uuid", type = String.class, description = "The UUID of the player")
-      },
-      queryParams = {
-          @OpenApiParam(
-              name = "replaceAll", type = Boolean.class,
-              description = "Whether to replace all stats with the given ones or to just update the ones that are given. Default is false.")
-      },
-      requestBody = @OpenApiRequestBody(content = @OpenApiContent(from = PlayerStatsModel.class)),
-      responses = {
-          @OpenApiResponse(status = "200", content = @OpenApiContent(from = PlayerStatsModel.class)),
-          @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)})
-      },
-      path = "/players/stats/{uuid}",
-      methods = {HttpMethod.PUT}
-  )
-  public static void update(Context ctx) {
-    // parse context
-    final UUID uuid = validUUID(ctx);
-    final boolean replaceAll = ctx.queryParamAsClass("replaceAll", Boolean.class)
-        .getOrDefault(false);
-    final PlayerStatsModel replacement = ctx.bodyAsClass(PlayerStatsModel.class);
-    final PlayerStats stats = Util.getAwait(c -> PlayerDataAPI.get().getStats(uuid, c));
-    Collection<String> remove;
-
-    // find which ones to remove
-    if (!replaceAll)
-      remove = Collections.emptyList();
-    else {
-      remove = stats.entrySet().stream()
-          .map(Entry::getKey)
-          .filter(e -> !replacement.getInternalMap().keySet().contains(e))
-          .collect(Collectors.toList());
-    }
-
-    // update
-    for (Map.Entry<String, Number> e : replacement.getInternalMap().entrySet())
-      stats.set(e.getKey(), e.getValue());
-
-    for (String key : remove)
-      stats.set(key, 0);
-
-    stats.save();
-    ctx.json(PlayerStatsModel.from(stats));
   }
 
 
@@ -160,6 +106,30 @@ public class PlayersStatsController {
     ctx.json(PlayerDataAPI.get().getRegisteredStatSets().stream()
         .map(PlayerStatSetModel::from)
         .collect(Collectors.toList()));
+  }
+
+  @OpenApi(
+      summary = "Get one existing stat sets by its id",
+      operationId = "getOnePlayersStatSet",
+      tags = "Player Stats",
+      responses = {
+          @OpenApiResponse(status = "200", content = @OpenApiContent(from = PlayerStatSetModel.class)),
+          @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)}),
+          @OpenApiResponse(status = "404", content = {@OpenApiContent(from = ErrorResponse.class)})
+      },
+      path = "/players/stat-sets/{id}",
+      methods = {HttpMethod.GET}
+  )
+  public static void getOneSet(Context ctx) {
+    final String id = ctx.pathParamAsClass("id", String.class)
+        .check(s -> !s.isEmpty(), "id cannot be empty")
+        .get();
+    final PlayerStatSet set = PlayerDataAPI.get().getStatsSet(id);
+
+    if (set == null)
+      throw new NotFoundResponse("No stat set under the given id found");
+
+    ctx.json(PlayerStatSetModel.from(set));
   }
 
 

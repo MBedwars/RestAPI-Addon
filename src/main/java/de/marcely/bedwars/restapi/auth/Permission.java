@@ -19,7 +19,6 @@ public class Permission implements RouteRole {
   public static final Permission PLAYERS_STATS_READ_RANK = new Permission("players.stats.read.rank");
   public static final Permission PLAYERS_STATS_READ_LEADERBOARD = new Permission("players.stats.read.leaderboard");
   public static final Permission PLAYERS_STATS_READ_SETS = new Permission("players.stats.read.sets");
-  public static final Permission PLAYERS_STATS_WRITE = new Permission("players.stats.write");
 
   public static final Permission PLAYERS_ACHIEVEMENTS_READ = new Permission("players.achievements.read");
   public static final Permission PLAYERS_ACHIEVEMENTS_READ_TYPES = new Permission("players.achievements.read.types");

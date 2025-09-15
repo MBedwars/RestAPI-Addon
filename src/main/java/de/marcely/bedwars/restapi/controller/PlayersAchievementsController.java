@@ -85,21 +85,21 @@ public class PlayersAchievementsController {
       remove = Collections.emptyList();
     else {
       remove = achievements.getEarnedIds().stream()
-          .filter(id -> replacement.getEarnings().stream().noneMatch(e -> e.getAchievement().getId().equals(id)))
+          .filter(id -> replacement.getEarnings().stream().noneMatch(e -> e.getAchievementId().equals(id)))
           .collect(Collectors.toList());
     }
 
     // find which ones to update
     for (Earning earning : replacement.getEarnings()) {
-      final PlayerAchievement achievement = PlayerDataAPI.get().getAchievementTypeById(earning.getAchievement().getId());
+      final PlayerAchievement achievement = PlayerDataAPI.get().getAchievementTypeById(earning.getAchievementId());
 
       if (achievement == null)
-        throw new NotFoundResponse("No achievement with id exists: " + earning.getAchievement().getId());
+        throw new NotFoundResponse("No achievement with id exists: " + earning.getAchievementId());
     }
 
     // update
     for (Earning earning : replacement.getEarnings()) {
-      final PlayerAchievement achievement = PlayerDataAPI.get().getAchievementTypeById(earning.getAchievement().getId());
+      final PlayerAchievement achievement = PlayerDataAPI.get().getAchievementTypeById(earning.getAchievementId());
 
       achievements.earn(achievement, !notify);
     }
@@ -131,6 +131,31 @@ public class PlayersAchievementsController {
   )
   public static void getAllTypes(Context ctx) {
     ctx.json(PlayerAchievementModel.from(PlayerDataAPI.get().getRegisteredAchievementTypes()));
+  }
+
+
+  @OpenApi(
+      summary = "Get one existing achievement type by its id",
+      operationId = "getAllPlayersAchievementTypes",
+      tags = "Player Achievements",
+      responses = {
+          @OpenApiResponse(status = "200", content = @OpenApiContent(from = PlayerAchievementModel.class)),
+          @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)}),
+          @OpenApiResponse(status = "404", content = {@OpenApiContent(from = ErrorResponse.class)})
+      },
+      path = "/players/achievement-types/{id}",
+      methods = {HttpMethod.GET}
+  )
+  public static void getOneType(Context ctx) {
+    final String id = ctx.pathParamAsClass("id", String.class)
+        .check(s -> !s.isEmpty(), "id cannot be empty")
+        .get();
+    final PlayerAchievement achievement = PlayerDataAPI.get().getAchievementTypeById(id);
+
+    if (achievement == null)
+      throw new NotFoundResponse("No achievement under the given id found");
+
+    ctx.json(PlayerAchievementModel.from(achievement));
   }
 
 

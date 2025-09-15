@@ -46,7 +46,7 @@ public class PlayerAchievementsModel {
         continue;
 
       earnings.add(new Earning(
-          PlayerAchievementModel.from(achievement),
+          achievement.getId(),
           DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(input.getEarnDate(achievement))
       ));
     }
@@ -62,8 +62,8 @@ public class PlayerAchievementsModel {
   @JsonSchema
   public static class Earning {
 
-    @Getter(onMethod = @__(@OpenApiDescription("Info about the earned achievement")))
-    private PlayerAchievementModel achievement;
+    @Getter(onMethod = @__(@OpenApiDescription("Id of the earned achievement")))
+    private String achievementId;
 
     @Getter(
         onMethod = @__(

@@ -26,10 +26,8 @@ import static io.javalin.apibuilder.ApiBuilder.*;
 @Getter
 public class RestApiPlugin extends JavaPlugin {
 
-  private static final byte MBEDWARS_API_NUM = 103;
-  private static final String MBEDWARS_API_NAME = "5.4.4";
-
-  private static RestApiPlugin instance;
+  private static final int MBEDWARS_API_NUM = 205;
+  private static final String MBEDWARS_API_NAME = "5.5.5";
 
   private final Set<Permission> registeredPermissions = new HashSet<>();
 
@@ -46,8 +44,6 @@ public class RestApiPlugin extends JavaPlugin {
 
   @Override
   public void onEnable() {
-    RestApiPlugin.instance = this;
-
     if (!validateMBedwars())
       return;
 
@@ -146,11 +142,11 @@ public class RestApiPlugin extends JavaPlugin {
           });
           path("stats/{uuid}", () -> {
             get(PlayersStatsController::getOne, Permission.PLAYERS_STATS_READ);
-            patch(PlayersStatsController::update, Permission.PLAYERS_STATS_WRITE);
             get("leaderboard", PlayersStatsController::getOneLeaderboard, Permission.PLAYERS_STATS_READ_RANK);
           });
           path("stat-sets", () -> {
             get(PlayersStatsController::getAllSets, Permission.PLAYERS_STATS_READ_SETS);
+            get("{id}", PlayersStatsController::getOneSet, Permission.PLAYERS_STATS_READ_SETS);
           });
           path("stats-leaderboard", () -> {
             get(PlayersStatsController::getLeaderboard, Permission.PLAYERS_STATS_READ_LEADERBOARD);
@@ -161,6 +157,7 @@ public class RestApiPlugin extends JavaPlugin {
           });
           path("achievement-types", () -> {
             get(PlayersAchievementsController::getAllTypes, Permission.PLAYERS_ACHIEVEMENTS_READ_TYPES);
+            get("{id}", PlayersAchievementsController::getOneType, Permission.PLAYERS_ACHIEVEMENTS_READ_TYPES);
           });
           path("properties/{uuid}", () -> {
             get(PlayersPropertiesController::getOne, Permission.PLAYERS_PROPERTIES_READ);

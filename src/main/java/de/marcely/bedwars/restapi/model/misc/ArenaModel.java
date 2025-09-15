@@ -4,6 +4,7 @@ import de.marcely.bedwars.api.arena.ArenaStatus;
 import de.marcely.bedwars.api.arena.Team;
 import de.marcely.bedwars.api.remote.RemoteAPI;
 import de.marcely.bedwars.api.remote.RemoteArena;
+import de.marcely.bedwars.api.remote.RemotePlayer;
 import de.marcely.bedwars.api.remote.RemoteServer;
 import io.javalin.openapi.JsonSchema;
 import io.javalin.openapi.OpenApiDescription;
@@ -15,6 +16,7 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -140,9 +142,9 @@ public class ArenaModel {
   @Getter(
       onMethod = @__(
           {
-              @OpenApiDescription("All players that are currently in the match. Doesn't include those that have already left")
+              @OpenApiDescription("The UUIDs of all players that are currently in the match. Doesn't include those that have already left")
           }))
-  private Collection<OnlinePlayerModel> ingamePlayers;
+  private Collection<UUID> ingamePlayers;
 
   @Getter(
       onMethod = @__(
@@ -168,7 +170,9 @@ public class ArenaModel {
         ItemStackModel.from(arena.getIcon()),
         arena.getGameWorldName(),
         arena.getStatus(),
-        OnlinePlayerModel.from(arena.getRemotePlayers()),
+        arena.getRemotePlayers().stream()
+            .map(RemotePlayer::getUniqueId)
+            .collect(Collectors.toList()),
         arena.getEnabledTeams()
     );
   }

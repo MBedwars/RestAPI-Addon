@@ -1,11 +1,13 @@
 package de.marcely.bedwars.restapi.model.misc;
 
 import de.marcely.bedwars.api.remote.RemoteAPI;
+import de.marcely.bedwars.api.remote.RemotePlayer;
 import de.marcely.bedwars.api.remote.RemoteServer;
 import io.javalin.openapi.JsonSchema;
 import io.javalin.openapi.OpenApiDescription;
 import io.javalin.openapi.OpenApiExample;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -59,16 +61,16 @@ public class ServerModel {
   @Getter(
       onMethod = @__(
           {
-              @OpenApiDescription("The arenas created on the server.")
+              @OpenApiDescription("The rest ids of the arenas created on the server.")
           }))
-  private Collection<ArenaModel> arenas;
+  private Collection<String> arenas;
 
   @Getter(
       onMethod = @__(
           {
-              @OpenApiDescription("The online players on the server.")
+              @OpenApiDescription("The UUIDs of the online players on the server.")
           }))
-  private Collection<OnlinePlayerModel> players;
+  private Collection<UUID> players;
 
 
   public static ServerModel from(RemoteServer input) {
@@ -78,10 +80,12 @@ public class ServerModel {
         input.getAPIVersion(),
         input.isHub(),
         input.isLocal(),
-        ArenaModel.from(input.getArenas()),
+        input.getArenas().stream()
+            .map(ArenaModel::toRestId)
+            .collect(Collectors.toList()),
         RemoteAPI.get().getOnlinePlayers().stream()
             .filter(p -> p.getServer().equals(input))
-            .map(OnlinePlayerModel::from)
+            .map(RemotePlayer::getUniqueId)
             .collect(Collectors.toList())
     );
   }
