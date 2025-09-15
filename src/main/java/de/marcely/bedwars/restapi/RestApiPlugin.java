@@ -13,6 +13,7 @@ import de.marcely.bedwars.restapi.controller.ServersController;
 import io.javalin.Javalin;
 import io.javalin.openapi.plugin.OpenApiPlugin;
 import io.javalin.openapi.plugin.redoc.ReDocPlugin;
+import io.javalin.util.JavalinLogger;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -82,6 +83,8 @@ public class RestApiPlugin extends JavaPlugin {
 
   private void runServer() {
     final HelloController helloController = new HelloController(this);
+
+    JavalinLogger.startupInfo = false;
 
     this.javalinServer = Javalin.create(config -> {
       config.jetty.defaultHost = Configs.host;
