@@ -24,7 +24,7 @@ public class Configs {
   public static int port = 8084;
   public static List<String> allowedCorsOrigins = Collections.emptyList();
 
-  private static final byte VERSION = 2;
+  private static final byte VERSION = 3;
 
   private static File getFile(RestApiPlugin plugin) {
     return new File(plugin.getAddon().getDataFolder(), "configs.yml");

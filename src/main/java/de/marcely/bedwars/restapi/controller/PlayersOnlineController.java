@@ -6,6 +6,7 @@ import de.marcely.bedwars.api.remote.RemotePlayer;
 import de.marcely.bedwars.api.remote.RemoteServer;
 import de.marcely.bedwars.restapi.model.ErrorResponse;
 import de.marcely.bedwars.restapi.model.misc.OnlinePlayerModel;
+import de.marcely.bedwars.restapi.model.player.PlayerUUIDModel;
 import de.marcely.bedwars.restapi.util.Util;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
@@ -14,6 +15,7 @@ import io.javalin.openapi.HttpMethod;
 import io.javalin.openapi.OpenApi;
 import io.javalin.openapi.OpenApiContent;
 import io.javalin.openapi.OpenApiParam;
+import io.javalin.openapi.OpenApiRequestBody;
 import io.javalin.openapi.OpenApiResponse;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,9 +31,11 @@ public class PlayersOnlineController {
       operationId = "getAllPlayers",
       tags = "Online Players",
       queryParams = {
-          @OpenApiParam(name = "serverChannelNames", type = String[].class, example = "Hub-1,Bedwars-1",
+          @OpenApiParam(
+              name = "serverChannelNames", type = String[].class, example = "Hub-1,Bedwars-1",
               description = "Whether to only fetch the info from certain servers (, is the seperator). Leave it empty to fetch from all servers."),
-          @OpenApiParam(name = "playerNames", type = String[].class, example = "Notch,md5",
+          @OpenApiParam(
+              name = "playerNames", type = String[].class, example = "Notch,md5",
               description = "Whether to only look up certain player given by their names (, is the seperator). Leave it empty to fetch all players."),
       },
       responses = {
@@ -83,7 +87,6 @@ public class PlayersOnlineController {
   }
 
 
-
   @OpenApi(
       summary = "Get a specific player that is currently online",
       operationId = "getOnePlayers",
@@ -108,39 +111,6 @@ public class PlayersOnlineController {
 
     ctx.json(OnlinePlayerModel.from(player));
   }
-
-
-  @OpenApi(
-      summary = "Get a player's uuid by their name",
-      description = "Only works for players that joined the server at least once. "
-          + " Also works for players that aren't online.",
-      operationId = "getOnePlayerUUIDByName",
-      tags = "Online Players",
-      pathParams = {
-          @OpenApiParam(name = "name", type = String.class, description = "The username of the player")
-      },
-      responses = {
-          @OpenApiResponse(status = "200", content = @OpenApiContent(from = UUID.class)),
-          @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)}),
-          @OpenApiResponse(status = "404", content = {@OpenApiContent(from = ErrorResponse.class)})
-      },
-      path = "/players/get-uuid/{name}",
-      methods = {HttpMethod.GET}
-  )
-  public static void getOneUUIDByName(Context ctx) {
-    final String name = ctx.pathParamAsClass("name", String.class)
-        .check(s -> s.length() >= 3, "name must be longer than 3 characters)")
-        .check(s -> s.length() <= 16, "name must be shorter than 16 characters")
-        .check(s -> s.chars().allMatch(c -> c >= 33 && c <= 126), "name contains invalid characters")
-        .get();
-    final Optional<UUID> uuid = Util.getAwait(c -> PlayerDataAPI.get().getUUIDByName(name, c));
-
-    if (uuid.isEmpty())
-      throw new NotFoundResponse("no player with that name found");
-
-    ctx.json(uuid.get());
-  }
-
 
 
   private static UUID validUUID(Context ctx) {

@@ -15,6 +15,8 @@ public class Permission implements RouteRole {
   public static final Permission SERVERS_READ = new Permission("servers.read");
   public static final Permission PLAYERS_READ_ONLINE = new Permission("players.read.online");
 
+  public static final Permission PLAYER_UUID_BY_NAME = new Permission("players.uuid.by-name");
+
   public static final Permission PLAYERS_STATS_READ = new Permission("players.stats.read");
   public static final Permission PLAYERS_STATS_READ_RANK = new Permission("players.stats.read.rank");
   public static final Permission PLAYERS_STATS_READ_LEADERBOARD = new Permission("players.stats.read.leaderboard");

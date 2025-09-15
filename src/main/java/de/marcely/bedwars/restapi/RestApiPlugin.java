@@ -8,6 +8,7 @@ import de.marcely.bedwars.restapi.controller.PlayersAchievementsController;
 import de.marcely.bedwars.restapi.controller.PlayersOnlineController;
 import de.marcely.bedwars.restapi.controller.PlayersPropertiesController;
 import de.marcely.bedwars.restapi.controller.PlayersStatsController;
+import de.marcely.bedwars.restapi.controller.PlayersUUIDController;
 import de.marcely.bedwars.restapi.controller.ServersController;
 import io.javalin.Javalin;
 import io.javalin.openapi.plugin.OpenApiPlugin;
@@ -140,8 +141,9 @@ public class RestApiPlugin extends JavaPlugin {
             get(PlayersOnlineController::getAll, Permission.PLAYERS_READ_ONLINE);
             get("{uuid}", PlayersOnlineController::getOne, Permission.PLAYERS_READ_ONLINE);
           });
-          path("get-uuid", () -> {
-            get("{name}", PlayersOnlineController::getOneUUIDByName, Permission.PLAYERS_READ_ONLINE);
+          path("uuid", () -> {
+            get(PlayersUUIDController::getManyByName, Permission.PLAYER_UUID_BY_NAME);
+            get("{name}", PlayersUUIDController::getOneByName, Permission.PLAYER_UUID_BY_NAME);
           });
           path("stats/{uuid}", () -> {
             get(PlayersStatsController::getOne, Permission.PLAYERS_STATS_READ);
