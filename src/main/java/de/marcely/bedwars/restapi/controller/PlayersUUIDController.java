@@ -27,10 +27,10 @@ public class PlayersUUIDController {
       operationId = "getOnePlayerUUIDByName",
       tags = "Players",
       pathParams = {
-          @OpenApiParam(name = "name", type = String.class, description = "The username of the player")
+          @OpenApiParam(name = "name", type = String.class, description = "The username of the player", example = "Notch")
       },
       responses = {
-          @OpenApiResponse(status = "200", content = @OpenApiContent(from = UUID.class)),
+          @OpenApiResponse(status = "200", content = @OpenApiContent(from = UUID.class), description = "Might not represent the actual Mojang UUID if the server is in offline-mode"),
           @OpenApiResponse(status = "400", content = {@OpenApiContent(from = ErrorResponse.class)}),
           @OpenApiResponse(status = "404", content = {@OpenApiContent(from = ErrorResponse.class)})
       },
@@ -60,7 +60,7 @@ public class PlayersUUIDController {
       operationId = "getManyPlayerUUIDByName",
       tags = "Players",
       requestBody = @OpenApiRequestBody(
-          content = @OpenApiContent(from = String[].class),
+          content = @OpenApiContent(from = String[].class, example = "[ \"Notch\" ] "),
           description = "An array of player names",
           required = true
       ),

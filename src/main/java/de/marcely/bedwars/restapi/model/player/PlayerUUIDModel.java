@@ -26,8 +26,10 @@ public class PlayerUUIDModel {
   @Getter(
       onMethod = @__(
           {
-              @OpenApiExample("ffe3e36e-d406-4d7a-aeba-0eb6e02a0aba"),
-              @OpenApiDescription("The uuid of the player with the given name. Might be null if no player with the given name was found."),
+              @OpenApiExample("069a79f4-44e9-4726-a5be-fca90e38aaf5"),
+              @OpenApiDescription("The uuid of the player with the given name. "
+                  + "Might be null if no player with the given name was found. "
+                  + "Might not represent the actual Mojang UUID if the server is in offline-mode."),
               @OpenApiNullable
           }))
   private UUID uuid;

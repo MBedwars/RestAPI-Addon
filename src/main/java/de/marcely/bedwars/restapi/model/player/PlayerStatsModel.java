@@ -40,6 +40,7 @@ public class PlayerStatsModel {
       try {
         value = set.getValue(input);
       } catch (IllegalStateException e) {
+        continue;
       }
 
       statSetValues.add(new StatsSetValuePair(
