@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ public class Configs {
 
   public static String host = "localhost";
   public static int port = 8084;
-  public static List<String> allowedCorsOrigins = Collections.emptyList();
+  public static List<String> allowedCorsOrigins = Arrays.asList("*");
 
   private static final byte VERSION = 3;
 

@@ -107,11 +107,11 @@ public class RestApiPlugin extends JavaPlugin {
               .filter(v -> !v.equals("*"))
               .collect(Collectors.toList());
 
-          if (withoutAny.size() != Configs.allowedCorsOrigins.size())
+          // has wildcard or is empty -> allow any host
+          if (withoutAny.size() != Configs.allowedCorsOrigins.size() || withoutAny.isEmpty()) {
             it.anyHost();
-
-          if (withoutAny.isEmpty())
             return;
+          }
 
           it.allowHost(
               withoutAny.get(0),
