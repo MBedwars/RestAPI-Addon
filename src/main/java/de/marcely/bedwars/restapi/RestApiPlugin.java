@@ -23,13 +23,15 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import static io.javalin.apibuilder.ApiBuilder.*;
+import static io.javalin.apibuilder.ApiBuilder.get;
+import static io.javalin.apibuilder.ApiBuilder.patch;
+import static io.javalin.apibuilder.ApiBuilder.path;
 
 @Getter
 public class RestApiPlugin extends JavaPlugin {
 
-  private static final int MBEDWARS_API_NUM = 205;
-  private static final String MBEDWARS_API_NAME = "5.5.5";
+  private static final int MBEDWARS_API_NUM = 208;
+  private static final String MBEDWARS_API_NAME = "5.5.8";
 
   private final Set<Permission> registeredPermissions = new HashSet<>();
 
@@ -87,20 +89,19 @@ public class RestApiPlugin extends JavaPlugin {
     JavalinLogger.startupInfo = false;
 
     this.javalinServer = Javalin.create(config -> {
-      config.jetty.defaultHost = Configs.host;
-      config.jetty.defaultPort = Configs.port;
+      config.jetty.host = Configs.host;
+      config.jetty.port = Configs.port;
 
       config.registerPlugin(new OpenApiPlugin(pluginConfig -> {
         pluginConfig.withDefinitionConfiguration((version, definition) -> {
-          definition.withSecurity(securityConfig -> {
-            securityConfig.withBasicAuth();
-          });
-          definition.withInfo(info -> {
-            info.title("MBedwars REST API");
-            info.summary("Installed on a Spigot server, it allows you to access a wide variety of data.");
-            info.contact("Support", "https://mbedwars.com/support", "support@marcely.de");
-            info.version(this.getDescription().getVersion());
-          });
+          definition
+              .withBasicAuth()
+              .info(info -> {
+                info.title("MBedwars REST API");
+                info.summary("Installed on a Spigot server, it allows you to access a wide variety of data.");
+                info.contact("Support", "https://mbedwars.com/support", "support@marcely.de");
+                info.version(this.getDescription().getVersion());
+              });
         });
       }));
       config.registerPlugin(new ReDocPlugin());
@@ -122,11 +123,9 @@ public class RestApiPlugin extends JavaPlugin {
         });
       });
 
-      config.router.mount(router -> {
-        router.beforeMatched(this.authController::handleAccess);
-      });
+      config.routes.beforeMatched(this.authController::handleAccess);
 
-      config.router.apiBuilder(() -> {
+      config.routes.apiBuilder(() -> {
         get(helloController::info);
 
         path("servers", () -> {
