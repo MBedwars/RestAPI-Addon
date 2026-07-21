@@ -52,7 +52,7 @@ public class PlayerPropertiesModel {
     final Map<String, String> entries = new HashMap<>();
 
     for (String key : input.getStoredKeys())
-      entries.put(key, input.get(key).orElseThrow());
+      entries.put(key, input.get(key).get());
 
     return new PlayerPropertiesModel(input.getPlayerUUID(), entries);
   }
